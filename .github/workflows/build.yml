@@ -1,0 +1,103 @@
+name: Build
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+
+  build:
+    
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        config: [release, assert]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        run: |
+          git submodule update --init --recursive
+
+      - name: Compile
+        run: |
+          LLVM_VER="$(python3 scripts/get_llvm_version.py llvm-project/llvm/CMakeLists.txt)"
+
+          CPU_ARCH="x86_64"
+
+          if [ x"${{ matrix.os }}" == x"ubuntu-latest" ]; then
+            # internally it uses a docker to run 18.04
+            PLATFORM_NAME="linux-gnu-ubuntu-18.04"
+            BUILD_PLATFORM="docker_ubuntu_18.04"
+          else
+            PLATFORM_NAME="apple-darwin"
+            BUILD_PLATFORM="local"
+          fi
+
+          CONFIG_SUFFIX="${{ matrix.config }}"
+
+          OUTPUT="llvm+mlir-${LLVM_VER}-${CPU_ARCH}-${PLATFORM_NAME}-${CONFIG_SUFFIX}"
+
+          bash build_llvm.bash -o "$OUTPUT" -p "$BUILD_PLATFORM" -c ${{ matrix.config }} -j 4
+
+          mkdir -p ${{ github.sha }}
+          mv *.tar.xz ${{ github.sha }}/
+
+      - name: Upload an artifact
+        uses: actions/upload-artifact@v3
+        if: github.event_name == 'push'
+        with:
+          if-no-files-found: error
+          name: build_artifact
+          path: ${{ github.sha }}
+
+  upload-tarballs:
+
+    runs-on: ubuntu-latest
+
+    needs: [build]
+
+    if: ${{ github.event_name == 'push' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        run: |
+          git submodule update --init --recursive
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build_artifact
+          path: ${{ github.sha }}
+
+      - name: Set up a release page
+        id: setup_release
+        run: |
+          LLVM_VER="$(python3 scripts/get_llvm_version.py llvm-project/llvm/CMakeLists.txt)"
+          LLVM_COMMIT_ID="$(cd llvm-project && git log -n 1 --pretty=format:"%h" )"
+          tag_name="llvm-${LLVM_VER}-${LLVM_COMMIT_ID}"
+          release_title="LLVM ${LLVM_VER} (${LLVM_COMMIT_ID})"
+          echo "LLVM ${LLVM_VER} created at $(date)" > body.md
+          echo "::set-output name=tag_name::${tag_name}"
+          echo "::set-output name=release_title::${release_title}"
+
+      - name: Upload tarballs
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "${{ github.sha }}/*.tar.xz"
+          bodyFile: body.md
+          token: "${{ secrets.GITHUB_TOKEN }}"
+          tag: "${{ steps.setup_release.outputs.tag_name }}"
+          name: "${{ steps.setup_release.outputs.release_title }}"
+          removeArtifacts: true
+
