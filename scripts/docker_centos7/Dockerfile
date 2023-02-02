@@ -23,4 +23,4 @@ ARG num_jobs
 RUN cd /tmp/llvm-project/build && make -j${num_jobs} install
 
 # Create a tarball
-RUN cd /tmp && tar -cJf "${install_dir_name}.tar.xz" "${install_dir_name}"d
+RUN cd /tmp && tar -cJf "${install_dir_name}.tar.xz" "${install_dir_name}"
