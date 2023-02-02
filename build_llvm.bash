@@ -21,7 +21,7 @@ usage() {
   echo "Usage: bash build_llvm.sh -o INSTALL_PREFIX -p PLATFORM -c CONFIG [-j NUM_JOBS]"
   echo "Ex: bash build_llvm.sh -o llvm-14.0.0-x86_64-linux-gnu-ubuntu-18.04 -p docker_ubuntu_18.04 -c assert -j 16"
   echo "INSTALL_PREFIX = <string> # \${INSTALL_PREFIX}.tar.xz is created"
-  echo "PLATFORM       = {local|docker_ubuntu_18.04}"
+  echo "PLATFORM       = {local|docker_ubuntu_18.04|docker_centos7}"
   echo "CONFIG         = {release|assert|debug}"
   echo "NUM_JOBS       = {1|2|3|...}"
   exit 1;
@@ -76,7 +76,7 @@ if [ x"$platform" == x"local" ]; then
   make -j${num_jobs} install
   tar -cJf "${CURRENT_DIR}/${install_prefix}.tar.xz" "$install_prefix"
   popd
-elif [ x"$platform" == x"docker_ubuntu_18.04" ]; then
+elif [ x"$platform" == x"docker_ubuntu_18.04" ] || [ x"$platform" == x"docker_centos7" ]; then
   # Prepare build directories
   cp -r "$SOURCE_DIR/scripts" "$BUILD_DIR/scripts"
 
@@ -89,7 +89,7 @@ elif [ x"$platform" == x"docker_ubuntu_18.04" ]; then
   # Run a docker
   DOCKER_TAG="build"
   DOCKER_REPOSITORY="clang-docker"
-  DOCKER_FILE_PATH="scripts/docker_ubuntu18.04/Dockerfile"
+  DOCKER_FILE_PATH="scripts/$platform/Dockerfile"
 
   echo "Building $DOCKER_REPOSITORY:$DOCKER_TAG using $DOCKER_FILE_PATH"
   docker build -t $DOCKER_REPOSITORY:$DOCKER_TAG --build-arg cmake_configs="${CMAKE_CONFIGS}" --build-arg num_jobs="${num_jobs}" --build-arg install_dir_name="${install_prefix}" -f "$BUILD_DIR/$DOCKER_FILE_PATH" "$BUILD_DIR"

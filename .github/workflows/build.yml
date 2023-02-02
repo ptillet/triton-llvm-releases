@@ -34,9 +34,9 @@ jobs:
           CPU_ARCH="x86_64"
 
           if [ x"${{ matrix.os }}" == x"ubuntu-latest" ]; then
-            # internally it uses a docker to run 18.04
-            PLATFORM_NAME="linux-gnu-ubuntu-18.04"
-            BUILD_PLATFORM="docker_ubuntu_18.04"
+            # internally it uses a docker to run the desired platform
+            PLATFORM_NAME="linux-gnu-centos7"
+            BUILD_PLATFORM="docker_centos7"
           else
             PLATFORM_NAME="apple-darwin"
             BUILD_PLATFORM="local"
