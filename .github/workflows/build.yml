@@ -17,12 +17,12 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        dist: [local, centos7, ubuntu-18.04]
+        dist: [local, centos-7, ubuntu-18.04]
         config: [release, assert]
 
         exclude:
           - os: macos-latest
-            dist: centos7
+            dist: centos-7
           - os: macos-latest
             dist: ubuntu-18.04
           - os: ubuntu-latest
