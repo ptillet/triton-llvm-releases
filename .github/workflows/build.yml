@@ -16,14 +16,14 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, 'macos-10.15']
         dist: [local, centos-7, ubuntu-18.04]
         config: [release, assert]
 
         exclude:
-          - os: macos-latest
+          - os: macos-10.15
             dist: centos-7
-          - os: macos-latest
+          - os: macos-10.15
             dist: ubuntu-18.04
           - os: ubuntu-latest
             dist: local
@@ -43,7 +43,7 @@ jobs:
 
           CPU_ARCH="x86_64"
 
-          if [ x"${{ matrix.os }}" != x"macos-latest" ]; then
+          if [ x"${{ matrix.os }}" != x"macos-10.15" ]; then
             # internally it uses a docker to run the desired platform
             PLATFORM_NAME="linux-gnu-${{ matrix.dist }}"
             BUILD_PLATFORM="docker_${{ matrix.dist }}"
