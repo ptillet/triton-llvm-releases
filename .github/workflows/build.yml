@@ -17,7 +17,17 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
+        dist: [local, centos7, ubuntu-18.04]
         config: [release, assert]
+
+        exclude:
+          - os: macos-latest
+            dist: centos7
+          - os: macos-latest
+            dist: ubuntu-18.04
+          - os: ubuntu-latest
+            dist: local
+
 
     steps:
       - name: Checkout
@@ -33,10 +43,10 @@ jobs:
 
           CPU_ARCH="x86_64"
 
-          if [ x"${{ matrix.os }}" == x"ubuntu-latest" ]; then
+          if [ x"${{ matrix.os }}" != x"macos-latest" ]; then
             # internally it uses a docker to run the desired platform
-            PLATFORM_NAME="linux-gnu-centos7"
-            BUILD_PLATFORM="docker_centos7"
+            PLATFORM_NAME="linux-gnu-${{ matrix.dist }}"
+            BUILD_PLATFORM="docker_${{ matrix.dist }}"
           else
             PLATFORM_NAME="apple-darwin"
             BUILD_PLATFORM="local"
