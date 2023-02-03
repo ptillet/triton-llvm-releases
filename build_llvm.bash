@@ -76,7 +76,8 @@ if [ x"$platform" == x"local" ]; then
   make -j${num_jobs} install
   tar -cJf "${CURRENT_DIR}/${install_prefix}.tar.xz" "$install_prefix"
   popd
-elif [ x"$platform" == x"docker_ubuntu_18.04" ] || [ x"$platform" == x"docker_centos7" ]; then
+elif [ x"$platform" == x"docker_ubuntu-18.04" ] || 
+     [ x"$platform" == x"docker_centos-7" ]; then
   # Prepare build directories
   cp -r "$SOURCE_DIR/scripts" "$BUILD_DIR/scripts"
 
