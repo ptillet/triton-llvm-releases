@@ -19,7 +19,7 @@ num_jobs=8
 
 usage() {
   echo "Usage: bash build_llvm.sh -o INSTALL_PREFIX -p PLATFORM -c CONFIG [-j NUM_JOBS]"
-  echo "Ex: bash build_llvm.sh -o llvm-14.0.0-x86_64-linux-gnu-ubuntu-18.04 -p docker_ubuntu_18.04 -c assert -j 16"
+  echo "Ex: bash build_llvm.sh -o llvm-16.0.0-x86_64-linux-gnu-ubuntu-18.04 -p docker_ubuntu_18.04 -c assert -j 16"
   echo "INSTALL_PREFIX = <string> # \${INSTALL_PREFIX}.tar.xz is created"
   echo "PLATFORM       = {local|docker_ubuntu_18.04|docker_centos7}"
   echo "CONFIG         = {release|assert|debug}"
