@@ -5,8 +5,8 @@ FROM centos:7
 RUN yum install -y git make wget python3
 # GCC / G++
 RUN yum install -y centos-release-scl
-RUN yum install -y devtoolset-7-gcc*
-SHELL [ "/usr/bin/scl", "enable", "devtoolset-7"]
+RUN yum install -y devtoolset-9-gcc*
+SHELL [ "/usr/bin/scl", "enable", "devtoolset-9"]
 
 # Use newer CMake for LLVM
 RUN cd tmp && wget -q https://github.com/Kitware/CMake/releases/download/v3.24.0/cmake-3.24.0-linux-x86_64.tar.gz && tar -xf cmake-3.24.0-linux-x86_64.tar.gz
