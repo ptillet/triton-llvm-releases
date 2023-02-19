@@ -8,7 +8,7 @@ RUN apt update && apt install -y git build-essential make wget python3
 RUN apt install -y software-properties-common
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 RUN apt update
-RUN apt install -y g++-9
+RUN apt install -y g++-11
 
 # Use newer CMake for LLVM
 RUN cd tmp && wget -q https://github.com/Kitware/CMake/releases/download/v3.24.0/cmake-3.24.0-linux-x86_64.tar.gz && tar -xf cmake-3.24.0-linux-x86_64.tar.gz
@@ -20,7 +20,7 @@ ADD llvm-project.tar.gz /tmp
 # Compile LLVM
 ARG cmake_configs
 ARG install_dir_name
-RUN mkdir /tmp/llvm-project/build && cd /tmp/llvm-project/build && /tmp/cmake-3.24.0-linux-x86_64/bin/cmake /tmp/llvm-project/llvm $cmake_configs -DCMAKE_C_COMPILER=gcc-9 -DCMAKE_CXX_COMPILER=g++-9 -DCMAKE_INSTALL_PREFIX="/tmp/${install_dir_name}"
+RUN mkdir /tmp/llvm-project/build && cd /tmp/llvm-project/build && /tmp/cmake-3.24.0-linux-x86_64/bin/cmake /tmp/llvm-project/llvm $cmake_configs -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_INSTALL_PREFIX="/tmp/${install_dir_name}"
 ARG num_jobs
 RUN cd /tmp/llvm-project/build && make -j${num_jobs} install
 
