@@ -52,7 +52,7 @@ if [ x"$install_prefix" == x ] || [ x"$platform" == x ] || [ x"$build_config" ==
 fi
 
 # Set up CMake configurations
-CMAKE_CONFIGS="-DLLVM_ENABLE_PROJECTS=mlir -DLLVM_TARGETS_TO_BUILD=X86;NVPTX;AMDGPU -DLLVM_INSTALL_UTILS=ON"
+CMAKE_CONFIGS="-DLLVM_ENABLE_PROJECTS=mlir -DLLVM_TARGETS_TO_BUILD=X86;NVPTX;AMDGPU"
 if [ x"$build_config" == x"release" ]; then
   CMAKE_CONFIGS="${CMAKE_CONFIGS} -DCMAKE_BUILD_TYPE=Release"
 elif [ x"$build_config" == x"assert" ]; then
