@@ -112,6 +112,12 @@ elif [ x"$platform" == x"docker_ubuntu-18.04" ] ||
   DOCKER_ID="$(docker create $DOCKER_REPOSITORY:$DOCKER_TAG)"
   docker cp "$DOCKER_ID:/tmp/${install_prefix}.tar.xz" "${CURRENT_DIR}/"
   docker rm "$DOCKER_ID"
+elif [ x"$arch" == x"arm64" ]; then
+  pushd "$BUILD_DIR"
+  cmake -G Ninja -S "$SOURCE_DIR/llvm-project/llvm" -DCMAKE_INSTALL_PREFIX="$BUILD_DIR/$install_prefix" $CMAKE_CONFIGS
+  ninja -C "$BUILD_DIR/$install_prefix" install
+  tar -cJf "${CURRENT_DIR}/${install_prefix}.tar.xz" "$install_prefix"
+  popd
 else
   rm -rf "$BUILD_DIR"
   usage
