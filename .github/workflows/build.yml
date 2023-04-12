@@ -28,7 +28,9 @@ jobs:
           - os: ubuntu-latest
             dist: local
           - os: macos-13.2
-            dist: local
+            dist: centos-7
+          - os: macos-13.2
+            dist: ubuntu-18.04
 
     steps:
       - name: Checkout
