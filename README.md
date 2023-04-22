@@ -22,7 +22,7 @@ popd ../
 vi build_llvm.bash
 
 # 3. Commit these changes
-git add -u
+[git](git) add -u
 git commit
 git push
 ```

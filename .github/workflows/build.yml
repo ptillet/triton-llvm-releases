@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, 'macos-10.15']
+        os: [ubuntu-latest, 'macos-10.15', 'macos-13-arm64']
         dist: [local, centos-7, ubuntu-18.04]
         config: [release, assert]
 
@@ -27,7 +27,10 @@ jobs:
             dist: ubuntu-18.04
           - os: ubuntu-latest
             dist: local
-
+          - os: macos-13-arm64
+            dist: centos-7
+          - os: macos-13-arm64
+            dist: ubuntu-18.04
 
     steps:
       - name: Checkout
@@ -41,22 +44,27 @@ jobs:
         run: |
           LLVM_VER="$(python3 scripts/get_llvm_version.py llvm-project/llvm/CMakeLists.txt)"
 
-          CPU_ARCH="x86_64"
 
-          if [ x"${{ matrix.os }}" != x"macos-10.15" ]; then
+          if [ x"${{ matrix.os }}" == x"ubuntu-latest" ]; then
             # internally it uses a docker to run the desired platform
             PLATFORM_NAME="linux-gnu-${{ matrix.dist }}"
             BUILD_PLATFORM="docker_${{ matrix.dist }}"
+            CPU_ARCH="x86_64"
+          elif [ x"${{ matrix.os }}" == x"macos-10.15" ]; then
+            PLATFORM_NAME="apple-darwin"
+            BUILD_PLATFORM="local"
+            CPU_ARCH="x86_64"
           else
             PLATFORM_NAME="apple-darwin"
             BUILD_PLATFORM="local"
+            CPU_ARCH="arm64"
           fi
 
           CONFIG_SUFFIX="${{ matrix.config }}"
 
           OUTPUT="llvm+mlir-${LLVM_VER}-${CPU_ARCH}-${PLATFORM_NAME}-${CONFIG_SUFFIX}"
 
-          bash build_llvm.bash -o "$OUTPUT" -p "$BUILD_PLATFORM" -c ${{ matrix.config }} -j 4
+          bash build_llvm.bash -o "$OUTPUT" -p "$BUILD_PLATFORM" -c "$CONFIG_SUFFIX" -j 4
 
           mkdir -p ${{ github.sha }}
           mv *.tar.xz ${{ github.sha }}/
