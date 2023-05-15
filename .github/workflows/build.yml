@@ -16,14 +16,14 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, 'macos-10.15', 'macos-13-arm64']
+        os: [ubuntu-latest, 'macos-13', 'macos-13-arm64']
         dist: [local, centos-7, ubuntu-18.04]
         config: [release, assert]
 
         exclude:
-          - os: macos-10.15
+          - os: macos-13
             dist: centos-7
-          - os: macos-10.15
+          - os: macos-13
             dist: ubuntu-18.04
           - os: ubuntu-latest
             dist: local
@@ -50,7 +50,7 @@ jobs:
             PLATFORM_NAME="linux-gnu-${{ matrix.dist }}"
             BUILD_PLATFORM="docker_${{ matrix.dist }}"
             CPU_ARCH="x86_64"
-          elif [ x"${{ matrix.os }}" == x"macos-10.15" ]; then
+          elif [ x"${{ matrix.os }}" == x"macos-13" ]; then
             PLATFORM_NAME="apple-darwin"
             BUILD_PLATFORM="local"
             CPU_ARCH="x86_64"
