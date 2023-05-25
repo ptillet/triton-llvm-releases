@@ -15,19 +15,21 @@ fi
 install_prefix=""
 platform=""
 build_config=""
+arch="x86"
 num_jobs=8
 
 usage() {
-  echo "Usage: bash build_llvm.sh -o INSTALL_PREFIX -p PLATFORM -c CONFIG [-j NUM_JOBS]"
-  echo "Ex: bash build_llvm.sh -o llvm-16.0.0-x86_64-linux-gnu-ubuntu-18.04 -p docker_ubuntu_18.04 -c assert -j 16"
+  echo "Usage: bash build_llvm.bash -o INSTALL_PREFIX -p PLATFORM -c CONFIG [-a ARCH] [-j NUM_JOBS]"
+  echo "Ex: bash build_llvm.bash -o llvm-16.0.0-x86_64-linux-gnu-ubuntu-18.04 -p docker_ubuntu-18.04 -c assert -j 16"
   echo "INSTALL_PREFIX = <string> # \${INSTALL_PREFIX}.tar.xz is created"
   echo "PLATFORM       = {local|docker_ubuntu_18.04|docker_centos7}"
   echo "CONFIG         = {release|assert|debug}"
+  echo "ARCH           = {x86|arm64}"
   echo "NUM_JOBS       = {1|2|3|...}"
   exit 1;
 }
 
-while getopts "o:p:c:j:" arg; do
+while getopts "o:p:c:a:j:" arg; do
   case "$arg" in
     o)
       install_prefix="$OPTARG"
@@ -37,6 +39,9 @@ while getopts "o:p:c:j:" arg; do
       ;;
     c)
       build_config="$OPTARG"
+      ;;
+    a)
+      arch="$OPTARG"
       ;;
     j)
       num_jobs="$OPTARG"
@@ -52,7 +57,13 @@ if [ x"$install_prefix" == x ] || [ x"$platform" == x ] || [ x"$build_config" ==
 fi
 
 # Set up CMake configurations
-CMAKE_CONFIGS="-DLLVM_ENABLE_PROJECTS=clang;mlir -DLLVM_TARGETS_TO_BUILD=X86;NVPTX;AMDGPU"
+CMAKE_CONFIGS="-DLLVM_ENABLE_PROJECTS=clang;mlir -DLLVM_INSTALL_UTILS=ON" 
+if [ x"$arch" == x"arm64" ]; then
+  CMAKE_CONFIGS="${CMAKE_CONFIGS}"
+else
+  CMAKE_CONFIGS="${CMAKE_CONFIGS} -DLLVM_TARGETS_TO_BUILD=X86;NVPTX;AMDGPU"
+fi
+
 if [ x"$build_config" == x"release" ]; then
   CMAKE_CONFIGS="${CMAKE_CONFIGS} -DCMAKE_BUILD_TYPE=Release"
 elif [ x"$build_config" == x"assert" ]; then
@@ -101,6 +112,12 @@ elif [ x"$platform" == x"docker_ubuntu-18.04" ] ||
   DOCKER_ID="$(docker create $DOCKER_REPOSITORY:$DOCKER_TAG)"
   docker cp "$DOCKER_ID:/tmp/${install_prefix}.tar.xz" "${CURRENT_DIR}/"
   docker rm "$DOCKER_ID"
+elif [ x"$arch" == x"arm64" ]; then
+  pushd "$BUILD_DIR"
+  cmake -G Ninja -S "$SOURCE_DIR/llvm-project/llvm" -DCMAKE_INSTALL_PREFIX="$BUILD_DIR/$install_prefix" $CMAKE_CONFIGS
+  ninja -C "$BUILD_DIR/$install_prefix" install
+  tar -cJf "${CURRENT_DIR}/${install_prefix}.tar.xz" "$install_prefix"
+  popd
 else
   rm -rf "$BUILD_DIR"
   usage
