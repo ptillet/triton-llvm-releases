@@ -62,7 +62,7 @@ jobs:
 
           CONFIG_SUFFIX="${{ matrix.config }}"
 
-          OUTPUT="llvm+mlir-${LLVM_VER}-${CPU_ARCH}-${PLATFORM_NAME}-${CONFIG_SUFFIX}"
+          OUTPUT="llvm+mlir+clang-${LLVM_VER}-${CPU_ARCH}-${PLATFORM_NAME}-${CONFIG_SUFFIX}"
 
           bash build_llvm.bash -o "$OUTPUT" -p "$BUILD_PLATFORM" -c "$CONFIG_SUFFIX" -j 4
 
