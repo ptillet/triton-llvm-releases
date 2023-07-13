@@ -57,11 +57,11 @@ if [ x"$install_prefix" == x ] || [ x"$platform" == x ] || [ x"$build_config" ==
 fi
 
 # Set up CMake configurations
-CMAKE_CONFIGS="-DLLVM_ENABLE_PROJECTS=clang;mlir -DLLVM_INSTALL_UTILS=ON" 
+CMAKE_CONFIGS="-DLLVM_ENABLE_PROJECTS=clang;mlir -DLLVM_INSTALL_UTILS=ON -DLLVM_INCLUDE_TESTS=OFF"
 if [ x"$arch" == x"arm64" ]; then
   CMAKE_CONFIGS="${CMAKE_CONFIGS}"
 else
-  CMAKE_CONFIGS="${CMAKE_CONFIGS} -DLLVM_TARGETS_TO_BUILD=X86;NVPTX;AMDGPU"
+  CMAKE_CONFIGS="${CMAKE_CONFIGS} -DLLVM_TARGETS_TO_BUILD=NVPTX;AMDGPU"
 fi
 
 if [ x"$build_config" == x"release" ]; then
