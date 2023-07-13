@@ -57,7 +57,7 @@ if [ x"$install_prefix" == x ] || [ x"$platform" == x ] || [ x"$build_config" ==
 fi
 
 # Set up CMake configurations
-CMAKE_CONFIGS="-DLLVM_ENABLE_PROJECTS=mlir -DLLVM_INSTALL_UTILS=ON" 
+CMAKE_CONFIGS="-DLLVM_ENABLE_PROJECTS=clang;mlir -DLLVM_INSTALL_UTILS=ON" 
 if [ x"$arch" == x"arm64" ]; then
   CMAKE_CONFIGS="${CMAKE_CONFIGS}"
 else
