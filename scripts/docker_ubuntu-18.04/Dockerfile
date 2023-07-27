@@ -11,7 +11,8 @@ RUN apt update
 RUN apt install -y g++-9
 
 # Use newer CMake for LLVM
-RUN cd tmp && wget -q https://github.com/Kitware/CMake/releases/download/v3.24.0/cmake-3.24.0-linux-x86_64.tar.gz && tar -xf cmake-3.24.0-linux-x86_64.tar.gz
+ARG arch
+RUN cd tmp && wget -q https://github.com/Kitware/CMake/releases/download/v3.24.0/cmake-3.24.0-linux-${arch}.tar.gz && tar -xf cmake-3.24.0-linux-${arch}.tar.gz
 
 # Copy necessary files from the host.  A tarball is automatically expanded.
 ADD scripts /tmp/scripts
@@ -20,7 +21,7 @@ ADD llvm-project.tar.gz /tmp
 # Compile LLVM
 ARG cmake_configs
 ARG install_dir_name
-RUN mkdir /tmp/llvm-project/build && cd /tmp/llvm-project/build && /tmp/cmake-3.24.0-linux-x86_64/bin/cmake /tmp/llvm-project/llvm $cmake_configs -DCMAKE_C_COMPILER=gcc-9 -DCMAKE_CXX_COMPILER=g++-9 -DCMAKE_INSTALL_PREFIX="/tmp/${install_dir_name}"
+RUN mkdir /tmp/llvm-project/build && cd /tmp/llvm-project/build && /tmp/cmake-3.24.0-linux-${arch}/bin/cmake /tmp/llvm-project/llvm $cmake_configs -DCMAKE_C_COMPILER=gcc-9 -DCMAKE_CXX_COMPILER=g++-9 -DCMAKE_INSTALL_PREFIX="/tmp/${install_dir_name}"
 ARG num_jobs
 RUN cd /tmp/llvm-project/build && make -j${num_jobs} install
 

@@ -104,7 +104,7 @@ elif [ x"$platform" == x"docker_ubuntu-18.04" ] ||
   DOCKER_FILE_PATH="scripts/$platform/Dockerfile"
 
   echo "Building $DOCKER_REPOSITORY:$DOCKER_TAG using $DOCKER_FILE_PATH"
-  docker build -t $DOCKER_REPOSITORY:$DOCKER_TAG --build-arg cmake_configs="${CMAKE_CONFIGS}" --build-arg num_jobs="${num_jobs}" --build-arg install_dir_name="${install_prefix}" -f "$BUILD_DIR/$DOCKER_FILE_PATH" "$BUILD_DIR"
+  docker build -t $DOCKER_REPOSITORY:$DOCKER_TAG --build-arg arch=`uname -m` --build-arg cmake_configs="${CMAKE_CONFIGS}" --build-arg num_jobs="${num_jobs}" --build-arg install_dir_name="${install_prefix}" -f "$BUILD_DIR/$DOCKER_FILE_PATH" "$BUILD_DIR"
 
   # Copy a created tarball from a Docker container.
   # We cannot directly copy a file from a Docker image, so first
